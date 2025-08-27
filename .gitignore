@@ -1,0 +1,5 @@
+# os 
+.DS_Store
+
+# package lock
+lazy-lock.json
