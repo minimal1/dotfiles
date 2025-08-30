@@ -6,23 +6,26 @@
 
 ```
 dotfiles/
+├── docs/                    # 각 도구별 상세 설정 문서
+│   ├── index.md
+│   ├── nvim.md
+│   ├── alacritty.md
+│   ├── tmux.md
+│   └── zsh.md
+├── nvim/                    # Neovim + LazyVim 설정
+│   ├── init.lua
+│   └── lua/
 ├── alacritty/               # Alacritty 터미널 설정
-│   └── alacritty.toml
-├── tmux/                    # tmux 설정
+│   ├── alacritty.toml
+│   └── cyberdream.toml
+├── tmux/                    # tmux 멀티플렉서 설정
 │   ├── .tmux.conf
 │   └── plugins.txt
 ├── zsh/                     # zsh + Oh My Zsh + Powerlevel10k
 │   ├── .zshrc
 │   ├── .p10k.zsh
 │   └── aliases.zsh
-├── nvim/                    # Neovim
-│   └── config/
-│       ├── init.lua
-│       └── lua/
-├── git/                     # git 설정
-│   ├── .gitconfig
-│   └── .gitignore_global
-├── scripts/                 # 설치/관리 스크립트
+├── scripts/                 # 설치/백업 스크립트
 │   ├── install.sh
 │   └── backup.sh
 └── README.md
@@ -52,49 +55,24 @@ ln -sf ~/Documents/dotfiles/zsh/.zshrc ~/.zshrc
 ln -sf ~/Documents/dotfiles/zsh/.p10k.zsh ~/.p10k.zsh
 
 # Neovim 설정 (LazyVim)
-ln -sf ~/Documents/dotfiles/nvim/config ~/.config/nvim
-
-# git 설정
-ln -sf ~/Documents/dotfiles/git/.gitconfig ~/.gitconfig
+ln -sf ~/Documents/dotfiles/nvim ~/.config/nvim
 ```
 
 ## 🔧 주요 설정
 
-### Alacritty
-- GPU 가속 터미널
-- 폰트 및 테마 설정
-- 키보드 단축키 커스터마이징
+각 도구별 상세 설정은 [`docs/`](docs/) 폴더의 문서를 참고하세요:
 
-### tmux
-- 기본 prefix key 설정
-- 마우스 지원 활성화
-- 세션 관리 최적화
-- 플러그인 관리
-
-### zsh + Oh My Zsh + Powerlevel10k
-- 강력한 프롬프트 테마 (Powerlevel10k)
-- 유용한 플러그인들
-- 개발 환경 PATH 설정
-- 커스텀 aliases
-
-### Neovim + LazyVim
-- 모던한 Neovim 설정
-- LSP 서버 자동 설정
-- 개발용 플러그인 패키지
-- 키바인딩 최적화
-
-### git
-- 글로벌 사용자 정보
-- 유용한 alias들
-- 커밋 템플릿
+- **[Alacritty](docs/alacritty.md)**: GPU 가속 터미널, D2Coding 폰트, Cyberdream 테마
+- **[tmux](docs/tmux.md)**: Ctrl-s prefix, Smart-splits 연동, Tokyo Night 테마  
+- **[zsh](docs/zsh.md)**: Oh My Zsh + Powerlevel10k, 자동완성, 구문 하이라이팅
+- **[Neovim](docs/nvim.md)**: Lazy.nvim + 27개 플러그인, LSP 통합, 모던 UI
 
 ## 📋 사용 중인 도구들
 
 - **Terminal**: Alacritty
-- **Terminal Multiplexer**: tmux
+- **Terminal Multiplexer**: tmux  
 - **Shell**: zsh + Oh My Zsh + Powerlevel10k
 - **Editor**: Neovim + LazyVim
-- **Version Control**: git
 
 ## 🔄 업데이트
 
@@ -110,14 +88,13 @@ cd ~/Documents/dotfiles
 
 - 설치 전 기존 설정 파일들은 자동으로 백업됩니다
 - 심볼릭 링크를 사용하므로 dotfiles 폴더에서 수정하면 바로 반영됩니다
-- 각 도구별 상세 설정은 해당 폴더의 파일을 참고하세요
+- 각 도구별 상세 설정은 [`docs/`](docs/) 폴더의 문서를 참고하세요
 
 ## ⚠️ 주의사항
 
 - 설치 스크립트 실행 전 기존 설정을 백업해주세요
 - Oh My Zsh와 Powerlevel10k가 미리 설치되어 있어야 합니다
 - LazyVim은 첫 실행 시 자동으로 플러그인을 설치합니다
-- 개인 정보(이메일, 토큰 등)가 포함된 설정은 별도 관리를 권장합니다
 
 ## 📦 필수 의존성
 
@@ -129,6 +106,10 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 
 # Powerlevel10k 설치
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+
+# 추가 도구들
+brew install tmux alacritty zsh-syntax-highlighting
+brew install --cask font-d2coding-nerd-font
 
 # LazyVim (Neovim 0.9.0+ 필요)
 # 설정 파일 링크 후 nvim 실행하면 자동 설치됩니다
