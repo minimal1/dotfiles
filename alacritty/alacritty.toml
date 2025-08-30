@@ -1,0 +1,14 @@
+general.import = ["~/.config/alacritty/cyberdream.toml"]
+
+[font]
+size = 20
+normal = { family = "D2CodingLigature Nerd Font", style = "Regular" }
+[window]
+# dimensions = { columns = 120, lines = 40 }
+padding = { x = 5, y = 0 }
+opacity = 0.9
+startup_mode = "SimpleFullscreen"
+option_as_alt = "Both"
+[colors]
+primary = { background = "#1e1e1e" }
+
