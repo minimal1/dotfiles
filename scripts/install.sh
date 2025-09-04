@@ -122,6 +122,24 @@ install_tmux() {
     if [ -d "$DOTFILES_DIR/tmux" ]; then
         echo "⚙️  tmux 설정 중..."
         backup_and_link "$DOTFILES_DIR/tmux/.tmux.conf" "$HOME/.tmux.conf"
+        
+        # tpm 자동 설치
+        if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+            echo "📦 tpm(Tmux Plugin Manager) 설치 중..."
+            git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+            echo "✅ tpm 설치 완료"
+        else
+            echo "ℹ️  tpm이 이미 설치되어 있습니다"
+        fi
+        
+        # tmux 플러그인 자동 설치
+        if [ -d "$HOME/.tmux/plugins/tpm" ]; then
+            echo "🔌 tmux 플러그인 설치 중..."
+            # tmux 세션이 실행 중이지 않아도 플러그인을 설치할 수 있도록 함
+            ~/.tmux/plugins/tpm/bin/install_plugins
+            echo "✅ tmux 플러그인 설치 완료"
+        fi
+        
         echo "✅ tmux 설정 완료"
     else
         echo "⚠️  tmux 설정 디렉토리를 찾을 수 없습니다"
@@ -265,7 +283,7 @@ main() {
         echo "1. 새 터미널 세션을 시작하거나 'source ~/.zshrc' 실행"
     fi
     if [ "$INSTALL_TMUX" = true ] || [ "$INSTALL_ALL" = true ]; then
-        echo "2. tmux에서 'Ctrl-s + I'로 플러그인 설치"
+        echo "2. tmux 플러그인이 자동으로 설치되었습니다"
     fi
     if [ "$INSTALL_NVIM" = true ] || [ "$INSTALL_ALL" = true ]; then
         echo "3. Neovim 실행 시 LazyVim이 자동으로 플러그인을 설치합니다"
