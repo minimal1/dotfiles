@@ -83,6 +83,24 @@ theme_plugins = 'datetime,playerctl,battery'
 
 ## 📋 설치 방법
 
+### 자동 설치 (권장)
+dotfiles 설치 스크립트를 사용하면 모든 과정이 자동화됩니다:
+
+```bash
+cd ~/Documents/dotfiles
+./scripts/install.sh -t  # tmux만 설치
+# 또는
+./scripts/install.sh     # 모든 도구 설치
+```
+
+자동으로 수행되는 작업:
+- 설정 파일 링크 생성
+- TPM(Tmux Plugin Manager) 설치
+- 모든 플러그인 자동 다운로드 및 설치
+
+### 수동 설치
+개별적으로 설치하려면:
+
 1. **tmux 설치**
 ```bash
 brew install tmux

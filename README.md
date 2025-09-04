@@ -94,6 +94,7 @@ cd ~/Documents/dotfiles
 
 - 설치 스크립트 실행 전 기존 설정을 백업해주세요
 - Oh My Zsh와 Powerlevel10k가 미리 설치되어 있어야 합니다
+- tmux 플러그인들은 설치 시 자동으로 설치됩니다
 - LazyVim은 첫 실행 시 자동으로 플러그인을 설치합니다
 
 ## 📦 필수 의존성
