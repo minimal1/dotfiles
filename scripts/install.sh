@@ -133,9 +133,17 @@ backup_and_install() {
 install_alacritty() {
     if [ -d "$DOTFILES_DIR/alacritty" ]; then
         echo "⚙️  Alacritty 설정 중..."
-        mkdir -p ~/.config/alacritty
-        backup_and_install "$DOTFILES_DIR/alacritty/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
-        backup_and_install "$DOTFILES_DIR/alacritty/cyberdream.toml" "$HOME/.config/alacritty/cyberdream.toml"
+        mkdir -p ~/.config
+        if [ "$USE_SYMLINK" = true ]; then
+            backup_and_install "$DOTFILES_DIR/alacritty" "$HOME/.config/alacritty"
+        else
+            echo "📁 복사: $DOTFILES_DIR/alacritty -> $HOME/.config/alacritty"
+            if [ -e "$HOME/.config/alacritty" ] || [ -L "$HOME/.config/alacritty" ]; then
+                echo "📋 백업: $HOME/.config/alacritty -> $BACKUP_DIR/"
+                mv "$HOME/.config/alacritty" "$BACKUP_DIR/"
+            fi
+            cp -r "$DOTFILES_DIR/alacritty" "$HOME/.config/alacritty"
+        fi
         echo "✅ Alacritty 설정 완료"
     else
         echo "⚠️  Alacritty 설정 디렉토리를 찾을 수 없습니다"
