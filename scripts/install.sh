@@ -12,6 +12,7 @@ INSTALL_ZSH=false
 INSTALL_TMUX=false
 INSTALL_NVIM=false
 INSTALL_ALACRITTY=false
+INSTALL_CLI_TOOLS=false
 INTERACTIVE_MODE=false
 
 # 설치 방식 플래그
@@ -29,6 +30,7 @@ show_help() {
     echo "  -t, --tmux         tmux 설정만 설치"
     echo "  -n, --nvim         neovim 설정만 설치"
     echo "  -l, --alacritty    alacritty 설정만 설치"
+    echo "  -c, --cli-tools    CLI 도구들 설치 (zinit, fzf, fd, bat, eza, delta, zoxide)"
     echo "  -i, --interactive  대화형 선택 모드"
     echo ""
     echo "설치 방식:"
@@ -41,6 +43,7 @@ show_help() {
     echo "예시:"
     echo "  $0                 # 모든 구성을 심볼릭 링크로 설치"
     echo "  $0 -z -t --link    # zsh와 tmux를 심볼릭 링크로 설치"
+    echo "  $0 -c              # CLI 도구들만 설치"
     echo "  $0 --copy          # 모든 구성을 복사로 설치"
     echo "  $0 --interactive   # 대화형 모드로 선택"
     echo ""
@@ -80,6 +83,11 @@ parse_args() {
                 ;;
             -l|--alacritty)
                 INSTALL_ALACRITTY=true
+                specific_option=true
+                shift
+                ;;
+            -c|--cli-tools)
+                INSTALL_CLI_TOOLS=true
                 specific_option=true
                 shift
                 ;;
@@ -212,6 +220,86 @@ install_nvim() {
     fi
 }
 
+# CLI 도구 설치 여부 확인 함수
+check_command() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# brew 설치 여부 확인 및 설치
+ensure_brew() {
+    if ! check_command brew; then
+        echo "📦 Homebrew가 설치되지 않았습니다. Homebrew를 설치합니다..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        echo "✅ Homebrew 설치 완료"
+    else
+        echo "ℹ️  Homebrew가 이미 설치되어 있습니다"
+    fi
+}
+
+# cyberdream 테마 다운로드 및 설치
+install_themes() {
+    echo "⚙️  cyberdream 테마 설치 중..."
+
+    # bat 테마 설치
+    mkdir -p "$HOME/.config/bat/themes"
+    if curl -fsSL "https://raw.githubusercontent.com/scottmckendry/cyberdream.nvim/refs/heads/main/extras/textmate/cyberdream.tmTheme" -o "$HOME/.config/bat/themes/cyberdream.tmTheme"; then
+        echo "✅ bat cyberdream 테마 설치 완료"
+        # bat 테마 빌드
+        if check_command bat; then
+            bat cache --build >/dev/null 2>&1 || true
+        fi
+    else
+        echo "❌ bat cyberdream 테마 다운로드 실패"
+    fi
+
+    # tmux 테마 설치 (정확한 경로로 수정)
+    mkdir -p "$HOME/.tmux/plugins/tmux/themes"
+    if curl -fsSL "https://raw.githubusercontent.com/scottmckendry/cyberdream.nvim/refs/heads/main/extras/tmux/cyberdream.conf" -o "$HOME/.tmux/plugins/tmux/themes/catppuccin_cyberdream_tmux.conf"; then
+        echo "✅ tmux cyberdream 테마 설치 완료"
+    else
+        echo "❌ tmux cyberdream 테마 다운로드 실패"
+    fi
+}
+
+# CLI 도구들 설치 함수
+install_cli_tools() {
+    echo "⚙️  CLI 도구들 설치 중..."
+
+    # Homebrew 확인
+    ensure_brew
+
+    # 설치할 도구들 목록
+    local tools=("fzf" "fd" "bat" "eza" "git-delta" "zoxide")
+
+    for tool in "${tools[@]}"; do
+        local cmd="$tool"
+        # git-delta는 delta 명령어로 확인
+        if [ "$tool" = "git-delta" ]; then
+            cmd="delta"
+        fi
+
+        if check_command "$cmd"; then
+            echo "ℹ️  $tool이 이미 설치되어 있습니다"
+        else
+            echo "📦 $tool 설치 중..."
+            if brew install "$tool"; then
+                echo "✅ $tool 설치 완료"
+            else
+                echo "❌ $tool 설치 실패"
+            fi
+        fi
+    done
+
+    # zinit은 zsh 설정에서 자동으로 설치되므로 별도 설치 불필요
+    echo "ℹ️  zinit은 zsh 설정 시 자동으로 설치됩니다"
+
+    # cyberdream 테마 설치
+    install_themes
+
+    echo "✅ CLI 도구들 설치 완료"
+}
+
 # 대화형 선택 메뉴
 interactive_menu() {
     echo "🎯 설치할 구성요소를 선택하세요:"
@@ -253,12 +341,13 @@ interactive_menu() {
     echo "2) tmux (멀티플렉서)"
     echo "3) zsh (쉘)"
     echo "4) Neovim (에디터)"
-    echo "5) 모든 구성요소"
+    echo "5) CLI 도구들 (zinit, fzf, fd, bat, eza, delta, zoxide)"
+    echo "6) 모든 구성요소"
     echo "0) 취소"
     echo ""
     
     while true; do
-        read -p "선택하세요 (1-5, 여러 선택시 공백으로 구분, 0은 취소): " -a choices
+        read -p "선택하세요 (1-6, 여러 선택시 공백으로 구분, 0은 취소): " -a choices
         
         if [ ${#choices[@]} -eq 0 ]; then
             echo "❌ 선택이 없습니다. 다시 선택해주세요."
@@ -267,7 +356,7 @@ interactive_menu() {
         
         local valid=true
         for choice in "${choices[@]}"; do
-            if [[ ! "$choice" =~ ^[0-5]$ ]]; then
+            if [[ ! "$choice" =~ ^[0-6]$ ]]; then
                 echo "❌ 잘못된 선택: $choice"
                 valid=false
                 break
@@ -283,6 +372,7 @@ interactive_menu() {
         INSTALL_TMUX=false
         INSTALL_ZSH=false
         INSTALL_NVIM=false
+        INSTALL_CLI_TOOLS=false
         INSTALL_ALL=false
         
         for choice in "${choices[@]}"; do
@@ -304,6 +394,9 @@ interactive_menu() {
                     INSTALL_NVIM=true
                     ;;
                 5)
+                    INSTALL_CLI_TOOLS=true
+                    ;;
+                6)
                     INSTALL_ALL=true
                     ;;
             esac
@@ -343,11 +436,13 @@ main() {
         install_tmux
         install_zsh
         install_nvim
+        install_cli_tools
     else
         [ "$INSTALL_ALACRITTY" = true ] && install_alacritty
         [ "$INSTALL_TMUX" = true ] && install_tmux
         [ "$INSTALL_ZSH" = true ] && install_zsh
         [ "$INSTALL_NVIM" = true ] && install_nvim
+        [ "$INSTALL_CLI_TOOLS" = true ] && install_cli_tools
     fi
     
     echo ""
@@ -362,6 +457,9 @@ main() {
     fi
     if [ "$INSTALL_NVIM" = true ] || [ "$INSTALL_ALL" = true ]; then
         echo "3. Neovim 실행 시 LazyVim이 자동으로 플러그인을 설치합니다"
+    fi
+    if [ "$INSTALL_CLI_TOOLS" = true ] || [ "$INSTALL_ALL" = true ]; then
+        echo "4. CLI 도구들과 cyberdream 테마가 설치되었습니다"
     fi
     echo ""
     if [ "$USE_SYMLINK" = true ]; then
