@@ -29,6 +29,9 @@ zinit light-mode for \
 
 ### End of Zinit's installer chunk
 
+# ----- environment: default -----
+export XDG_CONFIG_HOME="$HOME/.config"
+
 # ----- theme: p10k -----
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
