@@ -44,6 +44,25 @@ git clone [repository-url] ~/dotfiles
 cd ~/dotfiles
 ```
 
+## 주의사항
+
+### 1. zinit
+
+zinit 설치 후 설정을 추가할 지 말지 나오는데 그 부분은 해당 환경설정에 추가되어있기때문에 스킵하셔도 됩니다.
+
+
+### 2. TPM
+
+기존에 TPM 플러그인을 사용 중이라면, tpm plugin을 전부 지우고 재 설치하셔야합니다.  
+
+### 3. Bat
+
+테마 설정을 위해서 `bat cache --build` 명령어를 최초 한번 실행해주세요.  
+
+### 4. Tmux
+
+tmux 테마 설정을 위해서 [가이드](https://github.com/scottmckendry/cyberdream.nvim/tree/main/extras/tmux)를 따라주세요.
+
 ## 📝 참고사항
 
 - GNU Stow를 사용하여 심볼릭 링크를 자동으로 생성합니다
