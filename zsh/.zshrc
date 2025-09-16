@@ -53,22 +53,6 @@ alias lg='lazygit'
 # ----- development: neovim -----
 alias vim='nvim'
 
-# ----- development: nvm -----
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# ----- development: pnpm -----
-export PNPM_HOME="/Users/minimal/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-
-# ----- development: go -----
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:$(go env GOPATH)/bin
-
 # ----- productivity: fzf -----
 source <(fzf --zsh)
 
@@ -112,6 +96,8 @@ _fzf_comprun() {
 # ----- productivity: bat -----
 export BAT_THEME=cyberdream
 
+alias cat=bat
+
 # ----- productivity: eza -----
 alias ls="eza --long --color=always --git --no-filesize --no-user --no-time --no-permissions --icons=always"
 
@@ -119,3 +105,9 @@ alias ls="eza --long --color=always --git --no-filesize --no-user --no-time --no
 eval "$(zoxide init zsh)"
 
 alias cd="z"
+
+# ----- custom configuration -----
+CUSTOM_CONFIG="$HOME/.zshrc.custom"
+if [ -e $CUSTOM_CONFIG ]; then
+  source "$CUSTOM_CONFIG"
+fi
